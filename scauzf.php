@@ -169,7 +169,7 @@
 				$this->isError = false;
 			}else{
 				$this->isError = true;
-				return false;
+				trigger_error("login failed", E_USER_ERROR);
 			}
 
 			$this->userName = $msgArr[1];
@@ -222,9 +222,6 @@
 		*/
 		protected function getTest() {
 			$result = $this->getRequest($this->accessUrl . "xskscx.aspx?xh=" . $this->studentID . "&xm=" . $this->userName . "&gnmkdm=N121604", $this->beforeUrl);
-			// $re=classDealer_init($result, $args['chakebiaoType']);
-			// $re=iconv("gb2312","UTF-8",$re);
-			// $result=$re;
 			$this->returnResult = $result;
 		}
 
@@ -233,9 +230,19 @@
 		*/
 		protected function getTestScore() {
 			$result = $this->getRequest($this->accessUrl . "xscjcx.aspx?xh=" . $this->studentID . "&xm=" . $this->userName . "&gnmkdm=N121605", $this->beforeUrl);
-			// $re=classDealer_init($result, $args['chakebiaoType']);
-			// $re=iconv("gb2312","UTF-8",$re);
-			// $result=$re;
+			// var_dump($result);
+			require_once("scoreDealer.php");
+			$arg=getPostArgsFromWeb($result);
+			$arg=urlencode($arg);
+			//获取历史成绩
+			$scorePostData="__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=" . $arg . "&__VIEWSTATEGENERATOR=9727EB43&hidLanguage=&ddlXN=&ddlXQ=&ddl_kcxz=&btn_zcj=历史成绩";
+			
+			$result = $this->postRequest($this->accessUrl . "xscjcx.aspx?xh=" . $this->studentID . "&xm=" . $this->userName . "&gnmkdm=N121605" , $scorePostData, $this->beforeUrl);
+			$this->returnResult = $result;
+		}
+
+		protected function getPersonalMsg() {
+			$result = $this->getRequest($this->accessUrl . "xsgrxx.aspx?xh=" . $this->studentID . "&xm=" . $this->userName . "&gnmkdm=N121501", $this->beforeUrl);
 			$this->returnResult = $result;
 		}
 
@@ -246,15 +253,19 @@
 		protected function dispatcher($action) {
 			switch($action){
 				case "lessonTable":{
-					$this->getLessonTable();
+					$this->getLessonTable();//获取课表
 					break;
 				}
 				case "checkTest":{
-					$this->getTest();
+					$this->getTest();//获取考试信息
 					break;
 				}
 				case "checkScore":{
-					$this->getTestScore();
+					$this->getTestScore();//获取考试成绩
+					break;
+				}
+				case "personalMsg": {
+					$this->getPersonalMsg();
 					break;
 				}
 				default:{
