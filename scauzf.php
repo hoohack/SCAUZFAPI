@@ -53,6 +53,7 @@
 		public function __construct($entrance = 1) {
 			$this->entrance = $entrance;
 			$this->cookiefile = dirname(__FILE__) . '/' . $this->studentID . '.txt';
+			$this->isError = false;
 		}
 
 		/*
@@ -176,37 +177,6 @@
 		}
 
 		/*
-			模拟登陆
-			@param studentID(string), password(string), entrance(int)
-		*/
-		protected function login($studentID, $password, $entrance) {
-			$this->studentID = $studentID;
-			$this->password = $password;
-			$this->entrance = $entrance;
-
-			//设置要访问的url
-			$this->setAccessUrl();
-
-			//根据用户ID和url设置跳转前的url
-			$this->setBeforeUrl($this->studentID, $this->accessUrl);
-
-			//发送一个get请求
-			$this->getRequest($this->accessUrl, "");
-
-			//获得含有验证码的url
-			$codeUrl = $this->getCodeUrl();
-
-			//获取post的内容
-			$this->postContents = $this->getPostContents();
-
-			//发送一个post请求
-			$postResult = $this->postRequest($this->accessUrl, $this->postContents, "");
-			
-			//获取用户名
-			$this->getUserName($postResult);
-		}
-
-		/*
 			获取课表
 		*/
 		protected function getLessonTable() {
@@ -276,14 +246,49 @@
 		}
 
 		/*
-			唯一对外接口
+			对外接口
 			用户提供学号，密码，学生入口和所需要进行的操作，返回运行结果
 			@param studentID(string), password(string), entrance(int), action(string)
 		*/
-		public function init($studentID, $password, $entrance, $action) {
-			$this->login($studentID, $password, $entrance);
-			$this->dispatcher($action);
-			return $this->returnResult;
+		public function init($action) {
+			if($this->isError) {
+				$this->dispatcher($action);
+				return $this->returnResult;
+			}else {
+				trigger_error("login fialed", E_USER_ERROR);
+			}
+		}
+
+		/*
+			对外接口
+			模拟登陆
+			@param studentID(string), password(string), entrance(int)
+		*/
+		public function login($studentID, $password, $entrance) {
+			$this->studentID = $studentID;
+			$this->password = $password;
+			$this->entrance = $entrance;
+
+			//设置要访问的url
+			$this->setAccessUrl();
+
+			//根据用户ID和url设置跳转前的url
+			$this->setBeforeUrl($this->studentID, $this->accessUrl);
+
+			//发送一个get请求
+			$this->getRequest($this->accessUrl, "");
+
+			//获得含有验证码的url
+			$codeUrl = $this->getCodeUrl();
+
+			//获取post的内容
+			$this->postContents = $this->getPostContents();
+
+			//发送一个post请求
+			$postResult = $this->postRequest($this->accessUrl, $this->postContents, "");
+			
+			//获取用户名
+			$this->getUserName($postResult);
 		}
 
 		//析构函数,删除cookie文件

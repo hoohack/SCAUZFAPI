@@ -2,6 +2,8 @@
 <html>
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+		<link rel="stylesheet" type="text/css" href="stylesheets/index.css" />
+		
 	</head>
 	<body>
 		<h1>获取正方信息</h1>
@@ -13,18 +15,35 @@
 				<input type="password" name="password" /><br>
 
 				<ul id="navigation">
-
+					<li onmouseover="displaySubMenu(this)" onmouseout="hideSubMenu(this)">
+						<a href="#">菜单</a>
+						<ul>
+							<li>
+								<a href="#">查询课表</a>
+							</li>
+							<li>
+								<a href="#">查询考试信息</a>
+							</li>
+							<li onmouseover="displaySubMenu(this)" onmouseout="hideSubMenu(this)">
+								<a href="#">查询成绩</a>
+								<ul>
+									<li>
+										<a href="#">查询历年成绩</a>
+									</li>
+									<li>
+										<a href="#">查询学年成绩</a>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
 				</ul>
-
-				<select name="operation">
-					<option value="lessonTable">查询课表</option>
-					<option value="checkTest">查询考试信息</option>
-					<option value="checkScore">查询考试成绩</option>
-					<option value="personalMsg">查看个人信息</option>
-				</select>
+				<br>
+				<br><br>
 				<br>
 			    <input type="submit" name="button" id="button" value="登录" />
 		    </form>
     	</div>
+    	<script type="text/javascript" src="javascripts/index.js"></script>
     </body>
 </html>

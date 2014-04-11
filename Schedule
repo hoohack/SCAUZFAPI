@@ -1,3 +1,7 @@
-4-10 package the scauzf class, user can get the whole page but can't get details yet
-4-11 add trigger_error when logged in failed;add function so user can get all their testscore;consummate a log in
-page, user can enter their student id and password and choose an operation to get what they want
+4-10
+package the scauzf class, user can get the whole page but can't get details yet
+----------------------
+4-11
+1、add trigger_error when logged in failed
+2、add function so user can get all their testscore
+3、consummate a log in page, user can enter their student id and password and choose an operation to get what they want
