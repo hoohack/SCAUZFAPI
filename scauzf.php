@@ -7,7 +7,7 @@
 	*/
 	
 	//引入第三方文件，用于操作html
-	include('simple_html_dom.php');
+	include('./libs/simple_html_dom.php');
 	
 	class SCAUZF {
 		//需要访问的url
@@ -180,7 +180,7 @@
 			获取课表
 		*/
 		protected function getLessonTable() {
-			require_once("classDealer.php");
+			require_once("./libs/classDealer.php");
 			$result = $this->getRequest($this->accessUrl . "xskbcx.aspx?xh=" . $this->studentID . "&xm=" . $this->userName . "&gnmkdm=N121603", $this->beforeUrl);
 			$re = classDealer_init($result, 2);
 			$result=$re;
