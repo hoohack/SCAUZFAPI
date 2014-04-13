@@ -1,0 +1,77 @@
+* { 
+	padding:0; 
+	margin:0;
+	outline: none;
+	border: none;
+	font-family: "微软雅黑", sans-serif;
+}
+body { 
+	background: #BBFFFF;
+}
+
+.login-area {
+	width: 400px;
+	height: 200px;
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	margin: auto;
+	background: #fff;
+}
+
+.login-title {
+	width: 100%;
+	height: 50px;
+	background: #09e;
+	text-align: center;
+	line-height: 50px;
+	font-size: 16px;
+	font-weight: bold;
+	color: #fff;
+}
+
+.login-form {
+	height: 150px;
+	text-align: center;
+	line-height: 35px;
+	font-size: 16px;
+	color: #777;
+	border: 2px solid #999;
+}
+
+input[type="text"], input[type="password"]{
+	padding: 5px;
+	border: 1px solid #777;
+	font-size: 20px;
+	color: #555;
+	-webkit-trasition: border 0.3s;
+	-moz-trasition: border 0.3s;
+	-o-trasition: border 0.3s;
+	transition: border 0.3s;
+}
+
+input[type="text"]:focus, input[type="password"]:focus{
+	border-color: #08d;
+}
+
+input[type="submit"]{
+	width: 80px;
+	height: 40px;
+	background: #09e;
+	font-size: 20px;
+	color: #fff;
+	-webkit-transition: background 0.3s;
+	-moz-transition: background 0.3s;
+	-o-transition: background 0.3s;
+	transition: background 0.3s;
+}
+
+input[type="submit"]:hover{
+	background: #0bf;
+}
+
+input[type="submit"]:active{
+	background: #05a;
+}

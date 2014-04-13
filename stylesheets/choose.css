@@ -1,0 +1,14 @@
+* { 
+	padding:0; 
+	margin:0;
+	outline: none;
+	border: none;
+	font-family: "微软雅黑", sans-serif;
+}
+body { 
+	background: #BBFFFF;
+}
+
+#score {
+	display: none;
+}

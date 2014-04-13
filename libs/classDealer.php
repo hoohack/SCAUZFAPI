@@ -6,6 +6,7 @@
 	*/
 
 	//对外接口，传进参数为课表html
+	// include 'simple_html_dom.php';
 	function classDealer_init($data,$type){
 		if($type==="1"){
 			return getClassText($data);
@@ -18,7 +19,7 @@
 	//获取html课表
 	function getClassHtml($data){
 		//html课表css内容
-	$cssText="<style>.blacktab{border-collapse: collapse;width: 100%;margin: 2px auto;}.noprint { DISPLAY: none }table,tr,td{border:1px solid black;}</style>";
+		$cssText="<style>.blacktab{border-collapse: collapse;width: 100%;margin: 2px auto;}.noprint { DISPLAY: none }table,tr,td{border:1px solid black;}</style>";
 		$html=str_get_html($data);
 		foreach($html->find('table[id="Table1"]') as $row1){
 			$m=$row1;

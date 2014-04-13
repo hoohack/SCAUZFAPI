@@ -46,13 +46,15 @@
 		//运行结果
 		var $returnResult;
 
+		private static $_instance = NULL;
+
 		/*构造函数
 			@param $studentID(string), $password(string), $entrance(int)
 			设置学生学号，密码，学生入口，cookiefile命名
 		*/
 		public function __construct($entrance = 1) {
 			$this->entrance = $entrance;
-			$this->cookiefile = dirname(__FILE__) . '/' . $this->studentID . '.txt';
+			$this->cookiefile = 'temp.txt';
 			$this->isError = false;
 		}
 
@@ -170,6 +172,7 @@
 				$this->isError = false;
 			}else{
 				$this->isError = true;
+				unlink($this->cookiefile);
 				trigger_error("login failed", E_USER_ERROR);
 			}
 
@@ -182,6 +185,7 @@
 		protected function getLessonTable() {
 			require_once("./libs/classDealer.php");
 			$result = $this->getRequest($this->accessUrl . "xskbcx.aspx?xh=" . $this->studentID . "&xm=" . $this->userName . "&gnmkdm=N121603", $this->beforeUrl);
+			
 			$re = classDealer_init($result, 2);
 			$result=$re;
 			$this->returnResult = $result;
@@ -198,10 +202,9 @@
 		/*
 			获取考试成绩
 		*/
-		protected function getTestScore() {
+		protected function getAllScore() {
 			$result = $this->getRequest($this->accessUrl . "xscjcx.aspx?xh=" . $this->studentID . "&xm=" . $this->userName . "&gnmkdm=N121605", $this->beforeUrl);
-			// var_dump($result);
-			require_once("scoreDealer.php");
+			require_once("./libs/scoreDealer.php");
 			$arg=getPostArgsFromWeb($result);
 			$arg=urlencode($arg);
 			//获取历史成绩
@@ -230,8 +233,8 @@
 					$this->getTest();//获取考试信息
 					break;
 				}
-				case "checkScore":{
-					$this->getTestScore();//获取考试成绩
+				case "allScore":{
+					$this->getAllScore();//获取考试成绩
 					break;
 				}
 				case "personalMsg": {
@@ -252,10 +255,11 @@
 		*/
 		public function init($action) {
 			if($this->isError) {
+				unlink($this->cookiefile);
+				trigger_error("login fialed", E_USER_ERROR);
+			}else {
 				$this->dispatcher($action);
 				return $this->returnResult;
-			}else {
-				trigger_error("login fialed", E_USER_ERROR);
 			}
 		}
 
@@ -291,9 +295,20 @@
 			$this->getUserName($postResult);
 		}
 
+		public function __get($propertyName) {
+			if($propertyName == 'isError') {
+				return $this->isError;
+			}
+		}
+
 		//析构函数,删除cookie文件
 		public function __destruct() {
-			unlink($this->cookiefile);
+			if(file_exists($this->cookiefile)) {
+				unlink($this->cookiefile);
+			}
+			if(file_exists('temp.txt')) {
+				unlink('temp.txt');
+			}
 		}
 	}
 /*

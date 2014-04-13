@@ -1,0 +1,25 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+		<link rel="stylesheet" type="text/css" href="stylesheets/choose.css" />
+	</head>
+	<body>
+		<title>欢迎登录</title>
+		<form action="operation.php" method="post">
+			<select name="operation" onchange="displaySubMenu(this)">
+				<option value="lessonTable">查看课表</option>
+				<option value="checkTest">查看考试信息</option>
+				<option value="checkScore">查看成绩</option>
+			</select>
+
+			<select id="score" name="scoreop">
+				<option value="yearScore">查看学年成绩</option>
+				<option value="allScore">查看历年成绩</option>
+			</select>
+
+			<input type="submit" name="opbut" value="提交">
+		</form>
+		<script type="text/javascript" src="./javascripts/choose.js"></script>
+    </body>
+</html>
