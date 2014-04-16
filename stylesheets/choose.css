@@ -9,6 +9,71 @@ body {
 	background: #BBFFFF;
 }
 
+.op-select select {
+	background: transparent;
+	width: 268px;
+	padding: 5px;
+	font-size: 16px;
+	border: 1px solid #ccc;
+	height: 34px;
+	-webkit-appearance: none; /*for chrome*/
+}
+
+.score-select select {
+	background: transparent;
+	width: 268px;
+	padding: 5px;
+	font-size: 12px;
+	border: 1px solid #ccc;
+	height: 34px;
+	-webkit-appearance: none; /*for chrome*/
+}
+
+.year-select select {
+	background: transparent;
+	width: 268px;
+	padding: 5px;
+	font-size: 12px;
+	border: 1px solid #ccc;
+	height: 34px;
+	-webkit-appearance: none; /*for chrome*/
+}
+
 #score {
 	display: none;
+}
+
+#yearChoice {
+	display: none;
+}
+
+input[type="submit"]{
+	width: 80px;
+	height: 40px;
+	background: #09e;
+	font-size: 20px;
+	color: #fff;
+	-webkit-transition: background 0.3s;
+	-moz-transition: background 0.3s;
+	-o-transition: background 0.3s;
+	transition: background 0.3s;
+}
+
+input[type="submit"]:hover{
+	background: #0bf;
+}
+
+input[type="submit"]:active{
+	background: #05a;
+}
+
+.choose-area {
+	width: 400px;
+	height: 200px;
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	margin: auto;
 }

@@ -1,6 +1,6 @@
 <?php
 	include 'scauzf.php';
-	include 'autoload.php';
+	include './libs/autoload.php';
 
 	if(isset($_POST['button'])) {
 		$scau = &load_class('SCAUZF');

@@ -186,8 +186,9 @@
 			require_once("./libs/classDealer.php");
 			$result = $this->getRequest($this->accessUrl . "xskbcx.aspx?xh=" . $this->studentID . "&xm=" . $this->userName . "&gnmkdm=N121603", $this->beforeUrl);
 			
-			$re = classDealer_init($result, 2);
-			$result=$re;
+			$re = classDealer_init($result, 1);
+			$result = classDealer_array($re);
+			// $result = $re;
 			$this->returnResult = $result;
 		}
 
@@ -214,6 +215,18 @@
 			$this->returnResult = $result;
 		}
 
+		protected function getYearScore($year = "") {
+			$result = $this->getRequest($this->accessUrl . "xscjcx.aspx?xh=" . $this->studentID . "&xm=" . $this->userName . "&gnmkdm=N121605", $this->beforeUrl);
+			require_once("./libs/scoreDealer.php");
+			$arg=getPostArgsFromWeb($result);
+			$arg=urlencode($arg);
+			//获取历史成绩
+			$scorePostData="__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=" . $arg . "&__VIEWSTATEGENERATOR=9727EB43&hidLanguage=&ddlXN=" . $year . "&ddlXQ=&ddl_kcxz=&btn_xn=学年成绩";
+			// var_dump($scorePostData);
+			$result = $this->postRequest($this->accessUrl . "xscjcx.aspx?xh=" . $this->studentID . "&xm=" . $this->userName . "&gnmkdm=N121605" , $scorePostData, $this->beforeUrl);
+			$this->returnResult = $result;
+		}
+
 		protected function getPersonalMsg() {
 			$result = $this->getRequest($this->accessUrl . "xsgrxx.aspx?xh=" . $this->studentID . "&xm=" . $this->userName . "&gnmkdm=N121501", $this->beforeUrl);
 			$this->returnResult = $result;
@@ -223,7 +236,7 @@
 			用户登陆后的操作的调度器,根据action的值调用不同的操作
 			@param action(string)
 		*/
-		protected function dispatcher($action) {
+		protected function dispatcher($action, $year = "") {
 			switch($action){
 				case "lessonTable":{
 					$this->getLessonTable();//获取课表
@@ -235,6 +248,10 @@
 				}
 				case "allScore":{
 					$this->getAllScore();//获取考试成绩
+					break;
+				}
+				case "yearScore" : {
+					$this->getYearScore($year);
 					break;
 				}
 				case "personalMsg": {
@@ -253,12 +270,12 @@
 			用户提供学号，密码，学生入口和所需要进行的操作，返回运行结果
 			@param studentID(string), password(string), entrance(int), action(string)
 		*/
-		public function init($action) {
+		public function init($action, $year = "") {
 			if($this->isError) {
 				unlink($this->cookiefile);
 				trigger_error("login fialed", E_USER_ERROR);
 			}else {
-				$this->dispatcher($action);
+				$this->dispatcher($action, $year);
 				return $this->returnResult;
 			}
 		}
