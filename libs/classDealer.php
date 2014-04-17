@@ -33,6 +33,65 @@
 		return json_encode($lessonArr);
 	}
 
+	function ReverseArray($data) {
+		$html = str_get_html($data);
+		$lessonArr = array();
+		$tdArr = array();
+		$trArr = array();
+		$count = 0;
+		foreach ($html->find('tr') as $trval) {
+			foreach ($trval->find('td') as $tdVal) {
+				array_push($tdArr, $tdVal->innertext);
+			}
+			array_push($trArr, $tdArr);
+			unset($tdArr);
+			$count = 0;
+			$tdArr = array();
+			array_push($lessonArr, $trval->innertext);
+		}
+		$index = 0;
+		foreach ($trArr as $trval) {
+			if(count($trArr[$index]) <= 7) {
+				array_splice($trArr, $index, 1);
+				--$index;
+			}
+			else if(count($trArr[$index]) == 8) {
+				array_splice($trArr[$index], 0, 1);
+			}else if(count($trArr[$index]) == 9) {
+				array_splice($trArr[$index], 0, 2);
+			}
+			++$index;
+		}
+		array_splice($trArr, 1, 1);
+		array_splice($trArr, 3, 2);
+		// echo "<pre>";
+		// print_r($trArr);
+		// echo "</pre>";
+		$reverseArr = array();
+		$weekdays = array('星期一', '星期二', '星期三', '星期四', '星期五');
+		for($i = 0; $i < count($trArr); ++$i) {
+			for($j = 0; $j < count($trArr[$i]); ++$j) {
+				$reverseArr[$j][$i] = $trArr[$i][$j];
+			}
+		}
+
+		array_splice($reverseArr, 5, 2);
+		$result = array();
+		for($i = 0; $i < 5; ++$i) {
+			$reverseArr[$i]['dayofweeks'] = $reverseArr[$i][0];
+			$reverseArr[$i]['1,2'] = $reverseArr[$i][1];
+			$reverseArr[$i]['3,4'] = $reverseArr[$i][2];
+			$reverseArr[$i]['7,8'] = $reverseArr[$i][3];
+			$reverseArr[$i]['9,10'] = $reverseArr[$i][4];
+			$reverseArr[$i]['11, 12'] = $reverseArr[$i][5];
+			array_splice($reverseArr[$i], 0, 8);
+		}
+
+		echo "<pre>";
+		print_r($reverseArr);
+		echo "</pre>";
+	}
+
 	//获取html课表
 	function getClassHtml($data){
 		//html课表css内容

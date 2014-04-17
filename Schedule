@@ -21,3 +21,6 @@ package the scauzf class, user can get the whole page but can't get details yet
 4-16
 1、add analize class table function
 2、perfect operation page
+
+4-17
+1、add reverseArray function

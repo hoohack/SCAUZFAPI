@@ -189,7 +189,9 @@
 			$re = classDealer_init($result, 1);
 			$result = classDealer_array($re);
 			// $result = $re;
-			$this->returnResult = $result;
+			$testArr = ReverseArray($re);
+			// print_r($testArr);	
+			// $this->returnResult = $result;
 		}
 
 		/*
