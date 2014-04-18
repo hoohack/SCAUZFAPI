@@ -18,12 +18,18 @@ package the scauzf class, user can get the whole page but can't get details yet
 5、add some js and css file
 6、add autoload.php(autoload function and class)
 
+----------------------
+
 4-16
 1、add analize class table function
 2、perfect operation page
 
+----------------------
+
 4-17
 1、add reverseArray function
+
+----------------------
 
 4-18
 1、perfect reverseArray function
