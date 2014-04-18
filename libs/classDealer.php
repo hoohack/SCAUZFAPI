@@ -96,6 +96,8 @@
 						$reverseArr[$i]['11, 12, 13'] = $reverseArr[$i][5];
 					}
 				}
+			}else {
+				$reverseArr[$i]['11, 12'] = $reverseArr[$i][5];
 			}
 			
 			array_splice($reverseArr[$i], 0, 7);

@@ -1,29 +1,56 @@
 <?php
 
 	function printToPage($result) {
-		
-		foreach ($result as $val) {
-			echo '<tr><td colspan="2" align="Center" width="14%">'.$val['dayofweeks'].'</td></tr><br>';
-			if(isset($val['1,2'])) {
-				echo '<tr><td align="Center" rowspan="2">'.$val['1,2'] . '</td></tr><br>';
-			}
-			if(isset($val['3,4'])) {
-				echo '<td align="Center" rowspan="2">'.$val['3,4'] . '</td><br>';
-			}
-			if(isset($val['7,8'])) {
-				echo '<td align="Center" rowspan="2">'.$val['7,8'] . '</td><br>';
-			}
-			if(isset($val['9,10'])) {
-				echo '<td align="Center" rowspan="2">'.$val['9,10'] . '</td><br>';
-			}
-			if(isset($val['11,12'])) {
-				echo '<td align="Center" rowspan="2">'.$val['11,12'] . '</td><br>';
-			}
-			if(isset($val['11,12,13'])) {
-				echo '<td align="Center" rowspan="2">'.$val['11,12,13'] . '</td><br>';
-			}
-			echo "<br>";
+		echo '<table border="1">';
+		echo '<tr><td align="Center" width="2%"></td>';
+		foreach ($result as $weekVal) {
+			echo '<td align="Center" width="14%">'.$weekVal['dayofweeks'].'</td>';
 		}
+		echo '</tr>';
+
+		echo '<tr>';
+		echo '<td>1,2节</td>';
+		foreach ($result as $val) {
+			if(isset($val['1,2'])) {
+				echo '<td align="Center">'.$val['1,2'] . '</td>';
+			}
+		}
+		echo '</tr>';
+
+		echo '<tr><td>3,4节</td>';
+		foreach ($result as $tfval) {
+			if(isset($val['3,4'])) {
+				echo '<td align="Center">'.$tfval['3,4'] . '</td>';
+			}
+		}
+		echo '</tr>';
+
+		echo '<tr><td>7,8节</td>';
+		foreach ($result as $val) {
+			if(isset($val['7,8'])) {
+				echo '<td align="Center">'.$val['7,8'] . '</td>';
+			}
+		}
+		echo '</tr>';
+
+		echo '<tr><td>9,10节</td>';
+		foreach ($result as $val) {
+			if(isset($val['9,10'])) {
+				echo '<td align="Center">'.$val['9,10'] . '</td>';
+			}
+		}
+		echo '</tr>';
+		
+		echo '<tr><td>11,12节</td>';
+		foreach ($result as $val) {
+			if(isset($val['11,12'])) {
+				echo '<td align="Center">'.$val['11,12'] . '</td>';
+			}else if(isset($val['11,12,13'])) {
+				echo '<td align="Center">'.$val['11,12,13'] . '</td>';
+			}
+		}
+		echo '</tr>';
+		echo '</table>';
 	}
 
 	include './libs/autoload.php';
@@ -32,9 +59,6 @@
 			case 'lessonTable':
 				$scauob = unserialize($_COOKIE['scauob']);
 				$result = $scauob->init('lessonTable');
-				// echo "<pre>";
-				// print_r($result);
-				// echo "</pre>";
 				printToPage($result);
 				break;
 			case "personalMsg":
