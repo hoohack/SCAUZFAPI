@@ -191,7 +191,7 @@
 			// $result = $re;
 			$testArr = ReverseArray($re);
 			// print_r($testArr);	
-			// $this->returnResult = $result;
+			$this->returnResult = $testArr;
 		}
 
 		/*

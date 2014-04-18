@@ -64,9 +64,6 @@
 		}
 		array_splice($trArr, 1, 1);
 		array_splice($trArr, 3, 2);
-		// echo "<pre>";
-		// print_r($trArr);
-		// echo "</pre>";
 		$reverseArr = array();
 		$weekdays = array('星期一', '星期二', '星期三', '星期四', '星期五');
 		for($i = 0; $i < count($trArr); ++$i) {
@@ -83,13 +80,28 @@
 			$reverseArr[$i]['3,4'] = $reverseArr[$i][2];
 			$reverseArr[$i]['7,8'] = $reverseArr[$i][3];
 			$reverseArr[$i]['9,10'] = $reverseArr[$i][4];
-			$reverseArr[$i]['11, 12'] = $reverseArr[$i][5];
-			array_splice($reverseArr[$i], 0, 8);
+			if($reverseArr[$i][5] != '&nbsp;') {
+				$arr = explode("<br>", $reverseArr[$i][5]);
+				$tempVal = substr($arr[1], 4, 1);
+				if(is_numeric($tempVal)) {
+					if(substr($arr[1], 12, 1) == '2') {
+						$reverseArr[$i]['11, 12'] = $reverseArr[$i][5];
+					}else {
+						$reverseArr[$i]['11, 12, 13'] = $reverseArr[$i][5];
+					}
+				}else {
+					if(substr($arr[1], 11, 1) - substr($arr[1], 9, 1) == 2) {
+						$reverseArr[$i]['11, 12'] = $reverseArr[$i][5];
+					}else {
+						$reverseArr[$i]['11, 12, 13'] = $reverseArr[$i][5];
+					}
+				}
+			}
+			
+			array_splice($reverseArr[$i], 0, 7);
 		}
 
-		echo "<pre>";
-		print_r($reverseArr);
-		echo "</pre>";
+		return $reverseArr;
 	}
 
 	//获取html课表
