@@ -7,7 +7,9 @@
     	}
     	if(file_exists(strtolower($class) . '.php')) {
     		require_once strtolower($class) . '.php';
-    	}
+    	}else if(file_exists('/libs/' . strtolower($class) . '.php')) {
+            require_once '/libs/' . strtolower($class) . '.php';
+        }
     	else {
 			die("No such ". $class. " class.");
 		}

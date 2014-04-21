@@ -49,6 +49,7 @@
 			$tdArr = array();
 			array_push($lessonArr, $trval->innertext);
 		}
+		
 		$index = 0;
 		foreach ($trArr as $trval) {
 			if(count($trArr[$index]) <= 7) {
@@ -100,9 +101,8 @@
 				$reverseArr[$i]['11, 12'] = $reverseArr[$i][5];
 			}
 			
-			array_splice($reverseArr[$i], 0, 7);
+			array_splice($reverseArr[$i], 0, 8);
 		}
-
 		return $reverseArr;
 	}
 

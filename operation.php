@@ -53,13 +53,32 @@
 		echo '</table>';
 	}
 
+	function StoreLesson($result) {
+		$lesson_time = $lessonVal['dayofweeks'];
+		$lesson_name = $lessonVal['lesson_name'];
+		$teacher = $lessonVal['teacher'];
+		$is_even = $lessonVal['is_even'];
+		$room = $lessonVal['room'];
+		$last_time = $lessonVal['1'];
+		$student_id = $student;
+
+		foreach ($result as $lessonVal) {
+			$sql = "INSERT INTO `lesson` (l_id, lesson_time, lesson_name, teacher, is_even, room, last_time, student_id) 
+						VALUES ('', '$lessonVal[dayofweeks]', '$lessonVal')";
+		}
+	}
+
 	include './libs/autoload.php';
 	if(isset($_POST['opbut'])) {
 		switch ($_POST['operation']) {
 			case 'lessonTable':
 				$scauob = unserialize($_COOKIE['scauob']);
 				$result = $scauob->init('lessonTable');
+				echo "<pre>";
+				print_r($result);
+				echo "</pre>";
 				printToPage($result);
+				StoreLesson($result);
 				break;
 			case "personalMsg":
 				$scauob = unserialize($_COOKIE['scauob']);

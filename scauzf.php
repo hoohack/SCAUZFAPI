@@ -46,6 +46,8 @@
 		//运行结果
 		var $returnResult;
 
+		var $db;
+
 		private static $_instance = NULL;
 
 		/*构造函数
@@ -53,6 +55,7 @@
 			设置学生学号，密码，学生入口，cookiefile命名
 		*/
 		public function __construct($entrance = 1) {
+			$this->db = &load_class('Database');
 			$this->entrance = $entrance;
 			$this->cookiefile = 'temp.txt';
 			$this->isError = false;
@@ -98,16 +101,35 @@
 			返回请求结果
 		*/
 		protected function getRequest($accessUrl, $beforeUrl) {
-			$ch = curl_init($accessUrl);	//初始化一个cURL会话
-			curl_setopt($ch, CURLOPT_HEADER, 0);//设置将头文件的信息作为数据流输出
-			curl_setopt($ch, CURLOPT_REFERER, $beforeUrl);//设置跳转前的url，在HTTP请求头中"Referer: "的内容
-			curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);//在HTTP请求中包含一个"User-Agent: "头的字符串
-			curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookiefile);//连接结束后保存cookie信息的文件
-	        curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookiefile);//包含cookie数据的文件名，读取cookie内容
-	        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);	//将curl_exec()获取的信息以文件流的形式返回，而不是直接输出
-	        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);	//将服务器服务器返回的"Location: "放在header中递归的返回给服务器，使用CURLOPT_MAXREDIRS可以限定递归返回的数量
-	        $result = curl_exec($ch);	//执行一个cURL会话
-	        curl_close($ch);			//关闭一个cURL会话
+			//初始化一个CURL会话
+			$ch = curl_init($accessUrl);
+
+			//设置将头文件的信息作为数据流输出
+			curl_setopt($ch, CURLOPT_HEADER, 0);
+
+			//设置跳转前的url，在HTTP请求头中"Referer: "的内容
+			curl_setopt($ch, CURLOPT_REFERER, $beforeUrl);
+
+			//在HTTP请求中包含一个"User-Agent: "头的字符串
+			curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
+
+			//连接结束后保存cookie信息的文件
+			curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookiefile);
+
+			//包含cookie数据的文件名，读取cookie内容
+	        curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookiefile);
+
+	        //将curl_exec()获取的信息以文件流的形式返回，而不是直接输出
+	        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+	        //将服务器服务器返回的"Location: "放在header中递归的返回给服务器，使用CURLOPT_MAXREDIRS可以限定递归返回的数量
+	        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+	        
+	        //执行一个CURL会话
+	        $result = curl_exec($ch);
+	        
+	        //关闭CURL会话
+	        curl_close($ch);
 	        return $result;
 		}
 
@@ -118,9 +140,15 @@
 		*/
 		protected function postRequest($accessUrl, $postContents, $beforeUrl) {
 			$ch=curl_init();
-			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);//终止从服务端进行验证
-			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);//同上
-			curl_setopt($ch, CURLOPT_URL, $accessUrl);//需要获取的URL地址
+
+			//终止从服务端进行验证
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+
+			//同上
+			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+
+			//需要获取的URL地址
+			curl_setopt($ch, CURLOPT_URL, $accessUrl);
 			if(!($beforeUrl==="")) {
 				curl_setopt($ch, CURLOPT_REFERER, $beforeUrl);
 			}
@@ -130,8 +158,12 @@
 			curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookiefile );
 	  		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-			curl_setopt($ch, CURLOPT_POST, 1);	//说明会发送一个常规的POST请求
-	   		curl_setopt($ch, CURLOPT_POSTFIELDS, $postContents);//使用HTTP协议中的"POST"操作来发送postContents
+
+			//说明会发送一个常规的POST请求
+			curl_setopt($ch, CURLOPT_POST, 1);
+
+			//设置使用HTTP协议中的"POST"操作来发送postContents
+	   		curl_setopt($ch, CURLOPT_POSTFIELDS, $postContents);
 			$result = curl_exec($ch);
 			curl_close($ch);
 			return $result;
@@ -176,7 +208,16 @@
 				trigger_error("login failed", E_USER_ERROR);
 			}
 
-			$this->userName = $msgArr[1];
+			$this->userName = $msgArr['3'];
+			$param = array(":id" => "",
+							":s_id" => $this->studentID,
+							":s_name" => $this->userName);
+			
+			$insertSQL = "INSERT INTO `student` (id, s_id, s_name) VALUES (:id, :s_id, :s_name)";
+
+			if(!$this->db->execute($insertSQL, $param)) {
+				die($this->db->errorMessage);
+			}
 		}
 
 		/*
@@ -217,6 +258,9 @@
 			$this->returnResult = $result;
 		}
 
+		/*
+		*	获取某一学年信息
+		*/
 		protected function getYearScore($year = "") {
 			$result = $this->getRequest($this->accessUrl . "xscjcx.aspx?xh=" . $this->studentID . "&xm=" . $this->userName . "&gnmkdm=N121605", $this->beforeUrl);
 			require_once("./libs/scoreDealer.php");
@@ -229,6 +273,9 @@
 			$this->returnResult = $result;
 		}
 
+		/*
+		*	获取个人信息
+		*/
 		protected function getPersonalMsg() {
 			$result = $this->getRequest($this->accessUrl . "xsgrxx.aspx?xh=" . $this->studentID . "&xm=" . $this->userName . "&gnmkdm=N121501", $this->beforeUrl);
 			$this->returnResult = $result;
@@ -314,6 +361,9 @@
 			$this->getUserName($postResult);
 		}
 
+		/*
+		*魔法函数,返回类成员
+		*/
 		public function __get($propertyName) {
 			if($propertyName == 'isError') {
 				return $this->isError;
