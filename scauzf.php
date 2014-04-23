@@ -46,8 +46,6 @@
 		//运行结果
 		var $returnResult;
 
-		var $db;
-
 		private static $_instance = NULL;
 
 		/*构造函数
@@ -55,7 +53,6 @@
 			设置学生学号，密码，学生入口，cookiefile命名
 		*/
 		public function __construct($entrance = 1) {
-			$this->db = &load_class('Database');
 			$this->entrance = $entrance;
 			$this->cookiefile = 'temp.txt';
 			$this->isError = false;
@@ -209,30 +206,139 @@
 			}
 
 			$this->userName = $msgArr['3'];
-			$param = array(":id" => "",
+			$db = &load_class('Database');
+
+			$selectSQL = "SELECT count(s_id) as id_count FROM `student` WHERE `s_id` = {$this->studentID}";
+
+			if($db->fetch($selectSQL) !== false) {
+				$result = $db->fetch($selectSQL);
+				if($result['id_count'] == 0) {
+					$param = array(":id" => "",
 							":s_id" => $this->studentID,
 							":s_name" => $this->userName);
 			
-			$insertSQL = "INSERT INTO `student` (id, s_id, s_name) VALUES (:id, :s_id, :s_name)";
+					$insertSQL = "INSERT INTO `student` (id, s_id, s_name) VALUES (:id, :s_id, :s_name)";
 
-			if(!$this->db->execute($insertSQL, $param)) {
-				die($this->db->errorMessage);
+					if(!$db->execute($insertSQL, $param)) {
+						die($db->errorMessage);
+					}
+				}
 			}
+
+			$db->close();
+		}
+
+		/*
+			把课表保存到数据库中
+		*/
+		protected function storeIntoDB($resultArr) {
+			$db = &load_class('Database');
+
+			$selectSQL = "SELECT id FROM `student` WHERE `s_id` = {$this->studentID} LIMIT 1";
+			$selectRows = $db->fetch($selectSQL);
+			$stu_id = $selectRows['id'];
+
+			$i = 0;
+			foreach ($resultArr as $lessonVal) {
+				foreach ($lessonVal as $val) {
+					if($i == 0) {
+						$dayofweeks = $val;
+						++$i;
+					}else {
+						$lesson_time = array_keys($lessonVal)[$i];
+						$lesson_msg = $val;
+						$param = array(
+									":id" => "",
+									":dayofweeks" => $dayofweeks,
+									":lesson_time" => $lesson_time,
+									":lesson_msg" => $lesson_msg,
+									":stu_id" => $stu_id);
+						$insertSQL = "INSERT INTO `lesson`
+										(id, dayofweeks, lesson_time, lesson_msg, stu_id)
+										VALUES (:id, :dayofweeks, :lesson_time, :lesson_msg, :stu_id)";
+						if(!$db->execute($insertSQL, $param)) {
+							die($db->errorMessage);
+						}else {
+							++$i;
+						}
+					}
+				}
+				$i = 0;
+			}
+		}
+
+		/*
+			从数据库中获取课表
+		*/
+		protected function getTableFromDB() {
+			$weekdays = array('星期一', '星期二', '星期三', '星期四', '星期五');
+			$times = array('1,2', '3,4', '7,8', '9,10', '11,12', '11,12,13');
+			$db = &load_class('Database');
+
+			$selectSQL = "SELECT id FROM `student` WHERE `s_id` = {$this->studentID} LIMIT 1";
+			$selectRows = $db->fetch($selectSQL);
+			$stu_id = $selectRows['id'];
+
+			$tableArr = array();
+			$lessonArr = array();
+
+			foreach ($weekdays as $weekVal) {
+				foreach ($times as $timeVal) {
+					$lessonArr['dayofweeks'] = $weekVal;
+					$selectSQL = "SELECT dayofweeks, lesson_time, lesson_msg 
+								FROM `lesson`
+								WHERE `stu_id` = {$stu_id} AND `lesson_time` = '{$timeVal}' AND `dayofweeks` = '{$weekVal}'
+								LIMIT 1";
+					$selectArrs = $db->fetch($selectSQL);
+
+					if($selectArrs !== false) {
+						if(count($selectArrs) != 0) {
+							$lessonArr[$timeVal] = $selectArrs['lesson_msg'];
+						}
+					}
+				}
+				array_push($tableArr, $lessonArr);
+				unset($lessonArr);
+				$lessonArr = array();
+			}
+			
+			return $tableArr;
 		}
 
 		/*
 			获取课表
 		*/
 		protected function getLessonTable() {
-			require_once("./libs/classDealer.php");
-			$result = $this->getRequest($this->accessUrl . "xskbcx.aspx?xh=" . $this->studentID . "&xm=" . $this->userName . "&gnmkdm=N121603", $this->beforeUrl);
+			$db = &load_class('Database');
+
+			$selectSQL = "SELECT id FROM `student` WHERE `s_id` = {$this->studentID} LIMIT 1";
+			$selectRows = $db->fetch($selectSQL);
+			$stu_id = $selectRows['id'];
+
+			$selectSQL = "SELECT count(stu_id) as lesson_count FROM `lesson` WHERE `stu_id`={$stu_id}";
 			
-			$re = classDealer_init($result, 1);
-			$result = classDealer_array($re);
-			// $result = $re;
-			$testArr = ReverseArray($re);
-			// print_r($testArr);	
-			$this->returnResult = $testArr;
+			/*
+				如果数据库中有课表就从数据库中获取课表
+				否则就从页面中抓取课表并保存到数据库中
+			*/
+			if($db->fetch($selectSQL) !== false) {
+				$selectRows = $db->fetch($selectSQL);
+				if($selectRows['lesson_count'] == 0) {
+					require_once("./libs/classDealer.php");
+					$result = $this->getRequest($this->accessUrl . "xskbcx.aspx?xh=" . $this->studentID . "&xm=" . $this->userName . "&gnmkdm=N121603", $this->beforeUrl);
+					
+					$re = classDealer_init($result, 1);
+					// $result = classDealer_array($re);
+					$testArr = ReverseArray($re);
+					$this->returnResult = $testArr;
+					$this->storeIntoDB($testArr);
+				}else {
+					$result = $this->getTableFromDB();
+					$this->returnResult = $result;
+				}
+			}
+
+			$db->close();
 		}
 
 		/*

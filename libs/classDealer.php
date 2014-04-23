@@ -16,23 +16,7 @@
 		
 	}
 
-	function classDealer_array($data) {
-		$html = str_get_html($data);
-		$lessonArr = array();
-		foreach ($html->find('td[rowspan="2"]') as $val) {
-			preg_match('/(<td [\s\S]*?align\="Center"[\s\S]*?rowspan\="2"[\s\S]*?(width\="7%")?>)(.*?)(<\/td>)/i', $val, $arr);
-			$arrMsg = explode("<br>", $arr[3]);
-			$lessonMsg = array();
-			$lessonMsg['lessonName'] = $arrMsg[0];
-			$lessonMsg['lessonIndex'] = $arrMsg[1];
-			$lessonMsg['teacherName'] = $arrMsg[2];
-			$lessonMsg['classRoom'] = $arrMsg[3];
-			$lessonMsg['weekDays'] = substr($arrMsg[1], 0, 6);
-			array_push($lessonArr, $lessonMsg);
-		}
-		return json_encode($lessonArr);
-	}
-
+	//处理HTML，返回课表数组
 	function ReverseArray($data) {
 		$html = str_get_html($data);
 		$lessonArr = array();
@@ -49,7 +33,7 @@
 			$tdArr = array();
 			array_push($lessonArr, $trval->innertext);
 		}
-		
+
 		$index = 0;
 		foreach ($trArr as $trval) {
 			if(count($trArr[$index]) <= 7) {
@@ -63,8 +47,10 @@
 			}
 			++$index;
 		}
+
 		array_splice($trArr, 1, 1);
 		array_splice($trArr, 3, 2);
+
 		$reverseArr = array();
 		$weekdays = array('星期一', '星期二', '星期三', '星期四', '星期五');
 		for($i = 0; $i < count($trArr); ++$i) {
@@ -74,6 +60,11 @@
 		}
 
 		array_splice($reverseArr, 5, 2);
+
+		for($i = 0; $i != count($reverseArr); ++$i) {
+			array_splice($reverseArr[$i], 6, count($reverseArr[$i]) - 6);
+		}
+
 		$result = array();
 		for($i = 0; $i < 5; ++$i) {
 			$reverseArr[$i]['dayofweeks'] = $reverseArr[$i][0];
@@ -83,26 +74,31 @@
 			$reverseArr[$i]['9,10'] = $reverseArr[$i][4];
 			if($reverseArr[$i][5] != '&nbsp;') {
 				$arr = explode("<br>", $reverseArr[$i][5]);
+				// var_dump($arr);
 				$tempVal = substr($arr[1], 4, 1);
 				if(is_numeric($tempVal)) {
 					if(substr($arr[1], 12, 1) == '2') {
-						$reverseArr[$i]['11, 12'] = $reverseArr[$i][5];
+						$reverseArr[$i]['11,12'] = $reverseArr[$i][5];
 					}else {
-						$reverseArr[$i]['11, 12, 13'] = $reverseArr[$i][5];
+						$reverseArr[$i]['11,12,13'] = $reverseArr[$i][5];
 					}
 				}else {
 					if(substr($arr[1], 11, 1) - substr($arr[1], 9, 1) == 2) {
-						$reverseArr[$i]['11, 12'] = $reverseArr[$i][5];
+						$reverseArr[$i]['11,12'] = $reverseArr[$i][5];
 					}else {
-						$reverseArr[$i]['11, 12, 13'] = $reverseArr[$i][5];
+						$reverseArr[$i]['11,12,13'] = $reverseArr[$i][5];
 					}
 				}
 			}else {
-				$reverseArr[$i]['11, 12'] = $reverseArr[$i][5];
+				$reverseArr[$i]['11,12'] = $reverseArr[$i][5];
 			}
-			
-			array_splice($reverseArr[$i], 0, 8);
+			// var_dump($reverseArr[$i]);
+			array_splice($reverseArr[$i], 0, 6);
 		}
+		// echo "<pre>";
+		// print_r($reverseArr);
+		// echo "</pre>";
+
 		return $reverseArr;
 	}
 

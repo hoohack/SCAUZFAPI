@@ -74,11 +74,7 @@
 			case 'lessonTable':
 				$scauob = unserialize($_COOKIE['scauob']);
 				$result = $scauob->init('lessonTable');
-				echo "<pre>";
-				print_r($result);
-				echo "</pre>";
 				printToPage($result);
-				StoreLesson($result);
 				break;
 			case "personalMsg":
 				$scauob = unserialize($_COOKIE['scauob']);

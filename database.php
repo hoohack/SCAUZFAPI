@@ -90,11 +90,13 @@
 			$this->stmt->execute();
 
 			if($this->stmt) {
-				if($column) {
+				if($column != 0) {
 					return $this->stmt->fetch(PDO::FETCH_BOTH, $column);
 				}else {
 					return $this->stmt->fetch(PDO::FETCH_BOTH);
 				}
+			}else {
+				return false;
 			}
 		}
 
@@ -105,11 +107,15 @@
 		}
 
 		public function __sleep() {
-	        return array('connection');
+	        return array("username", "password", "dbname", "dsn", "driveropt");
 	    }
 
 	    public function __wakeup() {
 	        $this->dbh;
+	    }
+
+	    public function __destruct() {
+	    	$this->close();
 	    }
 
 	}

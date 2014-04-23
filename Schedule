@@ -37,3 +37,15 @@ package the scauzf class, user can get the whole page but can't get details yet
 
 4-21
 1、add database operation
+
+4-22
+1、add database
+database struct
+scauzf
+	--table name stduent
+	--table name lesson
+
+4-23
+1、add get table from database function
+2、add store table into database
+3、perfect scauzf class
