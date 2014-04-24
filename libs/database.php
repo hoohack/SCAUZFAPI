@@ -106,14 +106,6 @@
 			$this->stmt = null;
 		}
 
-		public function __sleep() {
-	        return array("username", "password", "dbname", "dsn", "driveropt");
-	    }
-
-	    public function __wakeup() {
-	        $this->dbh;
-	    }
-
 	    public function __destruct() {
 	    	$this->close();
 	    }

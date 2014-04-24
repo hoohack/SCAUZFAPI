@@ -11,46 +11,45 @@
 	
 	class SCAUZF {
 		//需要访问的url
-		var $accessUrl;
+		private $accessUrl;
 
 		//跳转前url，防止302重定向
-		var $beforeUrl;
+		private $beforeUrl;
 
 		//POST发送的内容
-		var $postContents;
+		private $postContents;
 
 		//学生入口，对应正方系统的1,2,3,4
-		var $entrance;
+		private $entrance;
 
 		//登陆后的操作
-		var $operation;
+		private $operation;
 
 		//用户登陆的学号
-		var $studentID;
+		private $studentID;
 
 		//密码
-		var $password;
+		private $password;
 
-		//正方系统不同学生入口的隐藏参数
-		var $zfParam;
+		//正方系统对于不同学生入口的隐藏参数
+		private $zfParam;
 
 		//cookie文件
-		var $cookiefile;
+		private $cookiefile;
 
 		//用户姓名
-		var $userName;
+		private $userName;
 
 		//错误标记，判断用户是否登陆成功
-		var $isError;
+		private $isError;
 
 		//运行结果
-		var $returnResult;
-
-		private static $_instance = NULL;
+		private $returnResult;
 
 		/*构造函数
 			@param $studentID(string), $password(string), $entrance(int)
-			设置学生学号，密码，学生入口，cookiefile命名
+			@author hhq
+			功能:设置学生学号，密码，学生入口，cookiefile命名
 		*/
 		public function __construct($entrance = 1) {
 			$this->entrance = $entrance;
@@ -59,7 +58,8 @@
 		}
 
 		/*
-			根据不同的入口设置访问的url，并根据不同的入口设置隐藏参数
+			@author hhq
+			功能:根据不同的入口设置需要访问的url，并根据不同的入口设置隐藏参数
 		*/
 		protected function setAccessUrl() {
 			switch ($this->entrance) {
@@ -85,17 +85,19 @@
 		}
 
 		/*
-			根据学号设置beforeurl
 			@param $studentID(string), $accessUrl(string)
+			@author hhq
+			功能：根据学号设置beforeurl
 		*/
 		protected function setBeforeUrl($studentID, $accessUrl) {
 			$this->beforeUrl = $accessUrl . 'xskbcx.aspx?xh=' . $studentID;
 		}
 
 		/*
-			get 请求
+			get 请求函数
 			@param accessUrl(string), beforeUrl(string)
-			返回请求结果
+			@author hhq
+			功能:返回请求结果
 		*/
 		protected function getRequest($accessUrl, $beforeUrl) {
 			//初始化一个CURL会话
@@ -131,9 +133,10 @@
 		}
 
 		/*
-			post 请求
+			post 请求函数
 			@param accessUrl(string),postContents(string), beforeUrl(string)
-			返回请求结果
+			@author hhq
+			功能：发送一个post请求并返回请求结果
 		*/
 		protected function postRequest($accessUrl, $postContents, $beforeUrl) {
 			$ch=curl_init();
@@ -167,14 +170,16 @@
 		}
 
 		/*
-			获取含有验证码的url
+			@author hhq
+			功能:获取含有验证码的url
 		*/
 		protected function getCodeUrl() {
 			return $this->accessUrl . "default2.aspx";
 		}
 
 		/*
-			获得post所需要的数据,包括所有参数和隐含参数
+			@author hhq
+			功能:获得post所需要的数据,包括所有参数和隐含参数
 		*/
 		protected function getPostContents() {
 			$content="TextBox1=" . $this->studentID . "&TextBox2=" . $this->password;
@@ -183,7 +188,8 @@
 		}
 
 		/*
-			从登陆后的返回结果中获得用户名
+			@author hhq
+			功能:从登陆后的返回结果中获得用户名,并将用户名存储到数据库中
 		*/
 		protected function getUserName($postResult) {
 			$message;
@@ -210,6 +216,7 @@
 
 			$selectSQL = "SELECT count(s_id) as id_count FROM `student` WHERE `s_id` = {$this->studentID}";
 
+			//如果用户不存在于数据库则插入到数据库中
 			if($db->fetch($selectSQL) !== false) {
 				$result = $db->fetch($selectSQL);
 				if($result['id_count'] == 0) {
@@ -229,14 +236,14 @@
 		}
 
 		/*
-			把课表保存到数据库中
+			@param resultArr(array)
+			@author hhq
+			功能:把课表保存到数据库中
 		*/
 		protected function storeIntoDB($resultArr) {
 			$db = &load_class('Database');
 
-			$selectSQL = "SELECT id FROM `student` WHERE `s_id` = {$this->studentID} LIMIT 1";
-			$selectRows = $db->fetch($selectSQL);
-			$stu_id = $selectRows['id'];
+			$stu_id = $this->getUserID();
 
 			$i = 0;
 			foreach ($resultArr as $lessonVal) {
@@ -268,16 +275,27 @@
 		}
 
 		/*
-			从数据库中获取课表
+		*	@author hhq
+		*	功能:从数据库中获取用户的id并返回
+		*/
+		protected function getUserID() {
+			$db = & load_class('Database');
+			$selectSQL = "SELECT id FROM `student` WHERE `s_id` = {$this->studentID} LIMIT 1";
+			$selectRows = $db->fetch($selectSQL);
+			$stu_id = $selectRows['id'];
+
+			return $stu_id;
+		}
+
+		/*
+			@author hhq
+			功能:从数据库中获取课表
 		*/
 		protected function getTableFromDB() {
 			$weekdays = array('星期一', '星期二', '星期三', '星期四', '星期五');
 			$times = array('1,2', '3,4', '7,8', '9,10', '11,12', '11,12,13');
 			$db = &load_class('Database');
-
-			$selectSQL = "SELECT id FROM `student` WHERE `s_id` = {$this->studentID} LIMIT 1";
-			$selectRows = $db->fetch($selectSQL);
-			$stu_id = $selectRows['id'];
+			$stu_id = $this->getUserID();
 
 			$tableArr = array();
 			$lessonArr = array();
@@ -306,16 +324,16 @@
 		}
 
 		/*
-			获取课表
+			@author hhq
+			功能:获取课表
 		*/
 		protected function getLessonTable() {
 			$db = &load_class('Database');
 
-			$selectSQL = "SELECT id FROM `student` WHERE `s_id` = {$this->studentID} LIMIT 1";
-			$selectRows = $db->fetch($selectSQL);
-			$stu_id = $selectRows['id'];
+			$stu_id = $this->getUserID();
 
-			$selectSQL = "SELECT count(stu_id) as lesson_count FROM `lesson` WHERE `stu_id`={$stu_id}";
+			$selectSQL = "SELECT count(stu_id) as lesson_count 
+							FROM `lesson` WHERE `stu_id`={$stu_id}";
 			
 			/*
 				如果数据库中有课表就从数据库中获取课表
@@ -328,7 +346,6 @@
 					$result = $this->getRequest($this->accessUrl . "xskbcx.aspx?xh=" . $this->studentID . "&xm=" . $this->userName . "&gnmkdm=N121603", $this->beforeUrl);
 					
 					$re = classDealer_init($result, 1);
-					// $result = classDealer_array($re);
 					$testArr = ReverseArray($re);
 					$this->returnResult = $testArr;
 					$this->storeIntoDB($testArr);
@@ -342,7 +359,8 @@
 		}
 
 		/*
-			获取考试信息
+			@author hhq
+			功能:获取考试信息
 		*/
 		protected function getTest() {
 			$result = $this->getRequest($this->accessUrl . "xskscx.aspx?xh=" . $this->studentID . "&xm=" . $this->userName . "&gnmkdm=N121604", $this->beforeUrl);
@@ -350,13 +368,15 @@
 		}
 
 		/*
-			获取考试成绩
+			@author hhq
+			功能：获取考试成绩
 		*/
 		protected function getAllScore() {
 			$result = $this->getRequest($this->accessUrl . "xscjcx.aspx?xh=" . $this->studentID . "&xm=" . $this->userName . "&gnmkdm=N121605", $this->beforeUrl);
 			require_once("./libs/scoreDealer.php");
 			$arg=getPostArgsFromWeb($result);
 			$arg=urlencode($arg);
+
 			//获取历史成绩
 			$scorePostData="__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=" . $arg . "&__VIEWSTATEGENERATOR=9727EB43&hidLanguage=&ddlXN=&ddlXQ=&ddl_kcxz=&btn_zcj=历史成绩";
 			
@@ -365,22 +385,25 @@
 		}
 
 		/*
-		*	获取某一学年信息
+		*	@author hhq
+		*	功能:获取某一学年信息
 		*/
 		protected function getYearScore($year = "") {
 			$result = $this->getRequest($this->accessUrl . "xscjcx.aspx?xh=" . $this->studentID . "&xm=" . $this->userName . "&gnmkdm=N121605", $this->beforeUrl);
 			require_once("./libs/scoreDealer.php");
 			$arg=getPostArgsFromWeb($result);
 			$arg=urlencode($arg);
+			
 			//获取历史成绩
 			$scorePostData="__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=" . $arg . "&__VIEWSTATEGENERATOR=9727EB43&hidLanguage=&ddlXN=" . $year . "&ddlXQ=&ddl_kcxz=&btn_xn=学年成绩";
-			// var_dump($scorePostData);
+			
 			$result = $this->postRequest($this->accessUrl . "xscjcx.aspx?xh=" . $this->studentID . "&xm=" . $this->userName . "&gnmkdm=N121605" , $scorePostData, $this->beforeUrl);
 			$this->returnResult = $result;
 		}
 
 		/*
-		*	获取个人信息
+		*	@author hhq
+		*	功能：获取个人信息
 		*/
 		protected function getPersonalMsg() {
 			$result = $this->getRequest($this->accessUrl . "xsgrxx.aspx?xh=" . $this->studentID . "&xm=" . $this->userName . "&gnmkdm=N121501", $this->beforeUrl);
@@ -388,8 +411,10 @@
 		}
 
 		/*
-			用户登陆后的操作的调度器,根据action的值调用不同的操作
+			用户登陆后的操作的调度器
+			@author hhq
 			@param action(string)
+			功能:根据action的值调用不同的操作
 		*/
 		protected function dispatcher($action, $year = "") {
 			switch($action){
@@ -402,15 +427,15 @@
 					break;
 				}
 				case "allScore":{
-					$this->getAllScore();//获取考试成绩
+					$this->getAllScore();//获取历年成绩
 					break;
 				}
 				case "yearScore" : {
-					$this->getYearScore($year);
+					$this->getYearScore($year);//获取学年成绩
 					break;
 				}
 				case "personalMsg": {
-					$this->getPersonalMsg();
+					$this->getPersonalMsg();//获取个人信息
 					break;
 				}
 				default:{
@@ -421,9 +446,10 @@
 		}
 
 		/*
-			对外接口
-			用户提供学号，密码，学生入口和所需要进行的操作，返回运行结果
-			@param studentID(string), password(string), entrance(int), action(string)
+		*	对外接口
+		*	@param studentID(string), password(string), entrance(int), action(string)
+		*	@author hhq
+		*	功能：用户提供学号，密码，学生入口和所需要进行的操作，返回运行结果
 		*/
 		public function init($action, $year = "") {
 			if($this->isError) {
@@ -436,9 +462,10 @@
 		}
 
 		/*
-			对外接口
-			模拟登陆
-			@param studentID(string), password(string), entrance(int)
+		*	对外接口
+		*	@author hhq
+		*	@param studentID(string), password(string), entrance(int)
+		*	功能:模拟用户登陆
 		*/
 		public function login($studentID, $password, $entrance) {
 			$this->studentID = $studentID;
@@ -468,7 +495,9 @@
 		}
 
 		/*
-		*魔法函数,返回类成员
+		*	@author hhq
+		*	@param propertyName(string)
+		*	魔法函数,返回类成员变量
 		*/
 		public function __get($propertyName) {
 			if($propertyName == 'isError') {
@@ -476,7 +505,20 @@
 			}
 		}
 
-		//析构函数,删除cookie文件
+		/*
+		*	@author hhq
+		*	@param propertyName(string)
+		*	魔法函数，isset()函数判断私有变量是不是被定义时，自动调用__isset()
+		*/
+		public function __isset($propertyName) {
+			return isset($this->$propertyName);
+		}
+
+		/*
+		*	@author hhq
+		*	析构函数
+		*	功能:删除cookie文件
+		*/
 		public function __destruct() {
 			if(file_exists($this->cookiefile)) {
 				unlink($this->cookiefile);
@@ -487,5 +529,5 @@
 		}
 	}
 /*
-	end of the class
+	The end of the class
 */
