@@ -62,3 +62,4 @@ scauzf
 1、add more comment in scauzf class
 2、add __isset function and getStudentID in scauzf class
 3、perfect file location
+4、add update lesson table function

@@ -2,8 +2,8 @@
 	/*
 	*抓取华农教务处信息的API
 	*用户根据API登陆之后再选择相应的操作
-	@author hhq
-	@date 2014/4/10
+	*@author hhq
+	*@date 2014/4/10
 	*/
 	
 	//引入第三方文件，用于操作html
@@ -85,19 +85,19 @@
 		}
 
 		/*
-			@param $studentID(string), $accessUrl(string)
-			@author hhq
-			功能：根据学号设置beforeurl
+		*	@param $studentID(string), $accessUrl(string)
+		*	@author hhq
+		*	功能：根据学号设置beforeurl
 		*/
 		protected function setBeforeUrl($studentID, $accessUrl) {
 			$this->beforeUrl = $accessUrl . 'xskbcx.aspx?xh=' . $studentID;
 		}
 
 		/*
-			get 请求函数
-			@param accessUrl(string), beforeUrl(string)
-			@author hhq
-			功能:返回请求结果
+		*	get 请求函数
+		*	@param accessUrl(string), beforeUrl(string)
+		*	@author hhq
+		*	功能:返回请求结果
 		*/
 		protected function getRequest($accessUrl, $beforeUrl) {
 			//初始化一个CURL会话
@@ -438,6 +438,10 @@
 					$this->getPersonalMsg();//获取个人信息
 					break;
 				}
+				case "updateLessonTable": {
+					$this->updateLessonTable();
+					break;
+				}
 				default:{
 					$this->isError = true;
 					break;
@@ -492,6 +496,27 @@
 			
 			//获取用户名
 			$this->getUserName($postResult);
+		}
+
+		/*
+		*	@author hhq
+		*	功能:更新课表
+		*/
+		protected function updateLessonTable() {
+			$db = &load_class('Database');
+
+			//删除原有课表
+			$stu_id = $this->getUserID();
+
+			$param = array(":stu_id" => $stu_id);
+			$sql = "DELETE FROM `lesson`
+					WHERE `stu_id` = :stu_id";
+			if($db->execute($sql, $param)) {
+				//重新获取课表
+				$this->getLessonTable();
+			}
+
+			$db->close();
 		}
 
 		/*

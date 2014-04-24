@@ -101,6 +101,11 @@
 				$result = $scauob->init('checkTest');
 				echo $result;
 				break;
+			case "updateLessonTable" :
+				$scauob = unserialize($_COOKIE['scauob']);
+				$result = $scauob->init('updateLessonTable');
+				printToPage($result);
+				break;
 			default:
 				break;
 		}
