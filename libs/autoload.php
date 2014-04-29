@@ -6,9 +6,11 @@
     		return $_classes[$class];
     	}
     	if(file_exists(strtolower($class) . '.php')) {
-    		require_once strtolower($class) . '.php';
+    		require strtolower($class) . '.php';
     	}else if(file_exists('./libs/' . strtolower($class) . '.php')) {
-            require_once './libs/' . strtolower($class) . '.php';
+            require './libs/' . strtolower($class) . '.php';
+        }else if(file_exists('./Models/' . strtolower($class) . '.class.php')) {
+            require './Models/' . strtolower($class) . '.class.php';
         }
     	else {
 			die("No such ". $class. " class.");
