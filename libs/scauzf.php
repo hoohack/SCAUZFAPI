@@ -265,6 +265,7 @@
 		*/
 		protected function getTest() {
 			$testModel = &load_class('Test');
+			
 			if($testModel->existInDB($this->studentID)) {
 				$result = $testModel->getTestFromDB($this->studentID);
 			}else {

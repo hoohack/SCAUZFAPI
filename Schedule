@@ -64,14 +64,25 @@ scauzf
 3、perfect file location
 4、add update lesson table function
 
+----------------------
+
 4-26
 1、add lesson.class.php and user.class.php
+
+----------------------
 
 4-27
 1、add test.class.php which include some database operation with score
 2、add score table
 
+----------------------
+
 4-28
 1、perfect lesson.class.php which include some database operation with lesson
 2、integrate lesson database operation in lesson.class.php
 3、add some comment in a few of files
+
+----------------------
+
+4-29
+1、add more comment

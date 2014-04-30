@@ -6,12 +6,24 @@
 	*/
 
 	class Test {
+		//db
 		private $db;
 
+		/*
+		*construct function
+		*load database
+		*@author hhq
+		*/
 		public function __construct() {
 			$this->db = &load_class('Database');
 		}
 
+		/*
+		*getUserID function
+		*@param studentID string (学生学号)
+		*获取用户ID
+		*@author hhq
+		*/
 		public function getUserID($studentID) {
 			$selectSQL = "SELECT id 
 						FROM `student` 
@@ -22,6 +34,12 @@
 			return $stu_id;
 		}
 
+		/*
+		*getUserName function
+		*@param s_id string (用户ID)
+		*获取用户姓名
+		*@author hhq
+		*/
 		public function getUserName($s_id) {
 			$selectSQL = "SELECT `s_name`
 							FROM `student`
@@ -33,6 +51,13 @@
 			return $stu_name;
 		}
 
+		/*
+		*storeInDB function
+		*@param data array (保存考试信息的数组)
+		*@param studentID string (学生学号)
+		*将学生考试信息保存到数据库中
+		*@author hhq
+		*/
 		public function storeIntoDB($data, $studentID) {
 			$s_id = $this->getUserID($studentID);
 			$s_name = $this->getUserName($s_id);
@@ -67,6 +92,12 @@
 			}
 		}
 
+		/*
+		*getScoreFromDB function
+		*@param studentID string(学生学号)
+		*从数据库中获取成绩并返回存储成绩的数组
+		*@author hhq
+		*/
 		public function getTestFromDB($studentID) {
 			$stu_id = $this->getUserID($studentID);
 			$testArrs = array();
@@ -94,6 +125,12 @@
 			return $testArrs;
 		}
 
+		/*
+		*function existInDB
+		*@param studentID string (学生学号)
+		*判断考试信息是否存在数据库
+		*@author hhq
+		*/
 		public function existInDB($studentID) {
 			$stu_id = $this->getUserID($studentID);
 
@@ -110,6 +147,9 @@
 			}
 		}
 
+		/*
+		*析构函数
+		*/
 		public function __destruct() {
 			//
 		}

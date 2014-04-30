@@ -5,10 +5,12 @@
 	*@author hhq
 	*/
 	class Lesson {
+		//db
 		private $db;
 
 		/*
-		*construct function,load Database
+		*construct function
+		*load Database
 		*@author hhq
 		*/
 		public function __construct() {
@@ -16,7 +18,8 @@
 		}
 
 		/*
-		*param studentID(string)
+		*getUserID function
+		*@param studentID string(用户ID)
 		*获取用户ID
 		*@author hhq
 		*/
@@ -31,11 +34,13 @@
 		}
 
 		/*
-		*param studentID(string)
+		*existInDB function
+		*@param studentID string(学生学号)
 		*判断数据库是否含有课表
 		*@author hhq
 		*/
 		public function existInDB($studentID) {
+			//获得用户ID
 			$stu_id = $this->getUserID($studentID);
 
 			$selectSQL = "SELECT `id`
@@ -51,6 +56,13 @@
 			}
 		}
 
+		/*
+		*storeInDB function
+		*@param lessonArr array 存储课表的数组
+		*@param studentID string 学生学号
+		*将存储课表的数组存储到数据库中
+		*@author hhq
+		*/
 		public function storeIntoDB($lessonArrs, $studentID) {
 			$stu_id = $this->getUserID($studentID);
 
@@ -83,6 +95,12 @@
 			}
 		}
 
+		/*
+		*getTableFromDB function
+		*@param studentID string (学生学号)
+		*从数据库中获取课表
+		*@author hhq
+		*/
 		public function getTableFromDB($studentID) {
 			$weekdays = array('星期一', '星期二', '星期三', '星期四', '星期五');
 			$times = array('1,2', '3,4', '7,8', '9,10', '11,12', '11,12,13');
@@ -106,6 +124,7 @@
 						}
 					}
 				}
+				//push each lesson into tableArr
 				array_push($tableArr, $lessonArr);
 				unset($lessonArr);
 				$lessonArr = array();
@@ -114,6 +133,11 @@
 			return $tableArr;
 		}
 
+		/*
+		*destruct function
+		*close db connection
+		*@author hhq
+		*/
 		public function __destruct() {
 			$this->db->close();
 		}

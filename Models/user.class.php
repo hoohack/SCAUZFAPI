@@ -6,12 +6,24 @@
 	*/
 	
 	class User {
+		//db
 		private $db;
 
+		/*
+		*construct function
+		*load database
+		*@author hhq
+		*/
 		public function __construct() {
 			$this->db = &load_class('Database');
 		}
 
+		/*
+		*getUserID function
+		*@param studentID string (学生学号)
+		*获取用户ID
+		*@author hhq
+		*/
 		public function getUserID($studentID) {
 			$db = &load_class('Database');
 			
@@ -24,6 +36,9 @@
 			return $stu_id;
 		}
 
+		/*
+		*析构函数
+		*/
 		public function __destruct() {
 			// $this->db->close();
 		}

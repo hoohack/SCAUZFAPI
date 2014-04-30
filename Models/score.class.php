@@ -5,12 +5,24 @@
 	*@author hhq
 	*/
 	class Score {
+		//db
 		private $db;
 
+		/*
+		*construct function
+		*load database
+		*@author hhq
+		*/
 		public function __construct() {
 			$this->db = &load_class('Database');
 		}
 
+		/*
+		*getUserID function
+		*@param studentID string (学生学号)
+		*获取用户ID
+		*@author hhq
+		*/
 		public function getUserID($studentID) {
 			$selectSQL = "SELECT id 
 						FROM `student` 
@@ -21,21 +33,18 @@
 			return $stu_id;
 		}
 
-		public function getUserName($s_id) {
-			$selectSQL = "SELECT `s_name`
-							FROM `student`
-							WHERE `id` = {$s_id}
-							LIMIT 1";
-			$selectRows = $this->db->fetch($selectSQL);
-			$stu_name = $selectRows['s_name'];
-
-			return $stu_name;
-		}
-
+		/*
+		*storeInDB function
+		*@param resultArr array (保存成绩的数组)
+		*@param studentID string (学生学号)
+		*将学生成绩保存到数据库中
+		*@author hhq
+		*/
 		public function storeIntoDB($resultArr, $studentID) {
 			$stu_id = $this->getUserID($studentID);
 
 			foreach ($resultArr as $rows) {
+				//assign every val in array
 				$s_year = $rows[0];
 				$term = $rows[1];
 				$course_code = $rows[2];
@@ -91,6 +100,12 @@
 			}
 		}
 
+		/*
+		*pushInArray function
+		*@param resultArrs array (保存数据库中返回的数组)
+		*把从数据库中查询到的结果存储到数组中并返回
+		*@author hhq
+		*/
 		protected function pushInArray($resultArrs) {
 			$result = array();
 			foreach ($resultArrs as $rows) {
@@ -121,6 +136,12 @@
 			return $result;
 		}
 
+		/*
+		*getScoreFromDB function
+		*@param studentID string
+		*从数据库中获取成绩并返回存储成绩的数组
+		*@author hhq
+		*/
 		public function getScoreFromDB($studentID) {
 			$stu_id = $this->getUserID($studentID);
 
@@ -137,6 +158,12 @@
 			return $result;
 		}
 
+		/*
+		*function getYearScoreFromDB
+		*@param studentID string (学生学号)
+		*@param year string (学年)
+		*获取学年成绩
+		*/
 		public function getYearScoreFromDB($studentID, $year) {
 			$stu_id = $this->getUserID($studentID);
 
@@ -153,6 +180,12 @@
 			return $result;
 		}
 
+		/*
+		*function existInDB
+		*@param studentID string (学生学号)
+		*判断所有成绩是否存在数据库
+		*@author hhq
+		*/
 		public function existInDB($studentID) {
 			$stu_id = $this->getUserID($studentID);
 
@@ -169,6 +202,13 @@
 			}
 		}
 
+		/*
+		*function existInDB
+		*@param studentID string (学生学号)
+		*@param year string (学年信息)
+		*判断所有成绩是否存在数据库
+		*@author hhq
+		*/
 		public function yearScoreExistInDB($studentID, $year) {
 			$stu_id = $this->getUserID($studentID);
 
@@ -184,6 +224,9 @@
 			}
 		}
 
+		/*
+		*析构函数
+		*/
 		public function __destruct() {
 			//
 		}
