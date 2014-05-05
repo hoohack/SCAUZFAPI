@@ -1,4 +1,5 @@
 SCAUZFAPI
+power by HHQ
 =========
 An API that can get some message from scau's zhengfang system.
 
