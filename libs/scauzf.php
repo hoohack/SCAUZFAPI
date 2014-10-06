@@ -19,9 +19,6 @@
 		//POST发送的内容
 		private $postContents;
 
-		//学生入口，对应正方系统的1,2,3,4
-		private $entrance;
-
 		//登陆后的操作
 		private $operation;
 
@@ -47,41 +44,22 @@
 		private $returnResult;
 
 		/*构造函数
-			@param $studentID(string), $password(string), $entrance(int)
+			@param $studentID(string), $password(string)
 			@author hhq
 			功能:设置学生学号，密码，学生入口，cookiefile命名
 		*/
-		public function __construct($entrance = 1) {
-			$this->entrance = $entrance;
+		public function __construct() {
 			$this->cookiefile = 'temp.txt';
 			$this->isError = false;
 		}
 
 		/*
 			@author hhq
-			功能:根据不同的入口设置需要访问的url，并根据不同的入口设置隐藏参数
+			功能:根据不同的入口设置需要访问的url和隐藏参数
 		*/
 		protected function setAccessUrl() {
-			switch ($this->entrance) {
-				case '1':
-					$this->accessUrl = 'http://202.116.160.166/';
-					$this->zfParam = 'dDwtMTg3MTM5OTI5MTs7Pm3EYMABeWjEprmuXse/oURhr5WV';
-					break;
-				case '2':
-					$this->accessUrl = 'http://202.116.160.174/';
-					$this->zfParam = 'dDwtMTg3MTM5OTI5MTs7PtWSKRNBLWWjCjYZdgnYOO7NxHv4';
-					break;
-				case '3':
-					$this->accessUrl = 'http://202.116.160.173/';
-					$this->zfParam = 'dDwtMTg3MTM5OTI5MTs7PpThNct/WCRJmqE0Bbet1xB2o04M';
-					break;
-				case '4':
-					$this->accessUrl = 'http://202.116.160.167/';
-					$this->zfParam = 'dDwtMTg3MTM5OTI5MTs7PiXqg0GwJxzn4SLMWMrOOoJJHvHk';
-					break;
-				default:
-					break;
-			}
+			$this->accessUrl = 'http://202.116.160.170/';
+			$this->zfParam = 'dDwtMTg3MTM5OTI5MTs7PgIWopWooBNLG0IJUQbwNWElYxSD';
 		}
 
 		/*
@@ -110,7 +88,7 @@
 			curl_setopt($ch, CURLOPT_REFERER, $beforeUrl);
 
 			//在HTTP请求中包含一个"User-Agent: "头的字符串
-			curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
+			// curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
 
 			//连接结束后保存cookie信息的文件
 			curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookiefile);
@@ -153,7 +131,7 @@
 				curl_setopt($ch, CURLOPT_REFERER, $beforeUrl);
 			}
 			curl_setopt($ch, CURLOPT_HEADER, 0);
-	  		curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
+	  		// curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
 			curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookiefile );  
 			curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookiefile );
 	  		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -182,8 +160,8 @@
 			功能:获得post所需要的数据,包括所有参数和隐含参数
 		*/
 		protected function getPostContents() {
-			$content="TextBox1=" . $this->studentID . "&TextBox2=" . $this->password;
-			$content=$content . "&RadioButtonList1=学生&TextBox3=&Button1=&lbLanguage=&__VIEWSTATE=" . $this->zfParam . "&__VIEWSTATEGENERATOR=92719903";
+			$content = "TextBox1=" . $this->studentID . "&TextBox2=" . $this->password;
+			$content = $content . "&RadioButtonList1=学生&TextBox3=&Button1=&lbLanguage=&__VIEWSTATE=" . $this->zfParam . "&__VIEWSTATEGENERATOR=92719903";
 			return $content;
 		}
 
@@ -251,7 +229,6 @@
 			}else {
 				require_once("./libs/classDealer.php");
 				$result = $this->getRequest($this->accessUrl . "xskbcx.aspx?xh=" . $this->studentID . "&xm=" . $this->userName . "&gnmkdm=N121603", $this->beforeUrl);
-				
 				$re = classDealer_init($result, 1);
 				$lessonArrs = ReverseArray($re);
 				$lesson->storeIntoDB($lessonArrs, $this->studentID);
@@ -383,7 +360,7 @@
 
 		/*
 		*	对外接口
-		*	@param studentID(string), password(string), entrance(int), action(string)
+		*	@param studentID(string), password(string),action(string)
 		*	@author hhq
 		*	功能：用户提供学号，密码，学生入口和所需要进行的操作，返回运行结果
 		*/
@@ -400,13 +377,12 @@
 		/*
 		*	对外接口
 		*	@author hhq
-		*	@param studentID(string), password(string), entrance(int)
+		*	@param studentID(string), password(string)
 		*	功能:模拟用户登陆
 		*/
-		public function login($studentID, $password, $entrance) {
+		public function login($studentID, $password) {
 			$this->studentID = $studentID;
 			$this->password = $password;
-			$this->entrance = $entrance;
 
 			//设置要访问的url
 			$this->setAccessUrl();
@@ -478,9 +454,11 @@
 		*/
 		public function __destruct() {
 			if(file_exists($this->cookiefile)) {
+				chmod($this->cookiefile, 0777);
 				unlink($this->cookiefile);
 			}
 			if(file_exists('temp.txt')) {
+				chmod('temp.txt', 0777);
 				unlink('temp.txt');
 			}
 		}
